@@ -6,6 +6,15 @@
 # poznamka: bez AI
 # """
 
+# Pojmenování proměnných: Názvy proměnných jako numberUpercaseWord a numberUpercases mají nekonzistentní pravopis ("Upercase" by mělo být "Uppercase"). - upraveno
+# Formátování kódu: Kód postrádá konzistentní formátování, jako jsou mezery kolem operátorů a konzistentní odsazení, což ovlivňuje čitelnost. - upraveno
+# Řádky 54-56: Použití \b v příkazu print je nesprávné a vede k neočekávanému výstupu. Mělo by být odstraněno pro jasnost. - upraveno
+# Řádek 112: Příkaz print nesprávně uvádí "Počet slov psaných velkými písmeny" pro slova malými písmeny, což by mělo být opraveno na "Počet slov psaných malými písmeny". - upraveno
+# Řádky 125-127: Výstup sloupcového grafu není formátován podle referenčního výstupu. Měl by obsahovat záhlaví a správně zarovnat výskyty. - upraveno
+# Řádky 59-74: Funkce selectedInput je repetitivní. Může být optimalizována převedením vstupu na celé číslo a jeho přímým použitím jako indexu pro seznam TEXTS. 
+# Řádky 77-86: Podobně může být funkce selectedTextFunction optimalizována použitím vstupu jako indexu, čímž se sníží opakování. - upraveno
+# Řádky 99-127: Více cyklů for je použito k iteraci přes stejný seznam words. Tyto cykly lze kombinovat do jednoho pro zlepšení efektivity.  - upraveno
+
 TEXTS = [
     '''Situated about 10 miles west of Kemmerer,
     Fossil Butte is a ruggedly impressive
@@ -34,96 +43,97 @@ TEXTS = [
     garpike and stingray are also present.'''
 ]
 
-lenTexts = len(TEXTS)
+len_texts = len(TEXTS)
 
-# USER
-users = {"bob": "123", "ann": "pass123", "mike":"password123", "liz":"pass123", "Peter":"lipo77"}
+# USER 
+users = {
+    "bob": "123", 
+    "ann": "pass123", 
+    "mike":"password123", 
+    "liz":"pass123", 
+    "Peter":"lipo77"
+    }
 
-usernameInput = input("Name: ")
-passwordInput = input("Password: ")
+username_input = input("username: ")
+password_input = input("password: ")
 authenticated = False
 
 for username, password in users.items():
-    if username == usernameInput and password == passwordInput:
-        print(F'Welcome to the app, {username}. We have {lenTexts} texts to be analyzed.')
-        selectedText = input(F"Enter a number btw. 1 and {lenTexts} to select: ")
+    if username == username_input and password == password_input:
+        print(
+            '----------------------------------------\n'
+            f'Welcome to the app, {username} \n'
+            f'We have {len_texts} texts to be analyzed.\n'
+            '----------------------------------------'
+            )
+        selectedText = input(f'Enter a number btw. 1 and {len_texts} to select: ')
+        print('----------------------------------------')
         authenticated = True
         break
 
 if authenticated == False:
-    print(F"""username: {username} \b
-password: {password} \b
-unregistered user, terminating the program..""")
+    print(
+        f'username: {username} \npassword: {password} \n'
+        'unregistered user, terminating the program..'
+        )
     quit()
 
-def selectedInput(input):
-    if input == '1':
+# USER INPUT
+def selectedInput(input, TEXTS):
+    user_input = int(input)
+    if user_input == 1:
         word = len(''.join(TEXTS[0]).split())
-        return word
-    elif input == "2":
+        words = ''.join(TEXTS[0]).split()
+        return word, words
+    elif user_input == 2:
         word = len(''.join(TEXTS[1]).split())
-        return word
-    elif input == "3":
+        words = ''.join(TEXTS[1]).split()
+        return word, words
+    elif user_input == 3:
         word = len(''.join(TEXTS[2]).split())
-        return word
-    elif input.isnumeric() == False:
-        print("input must by number, terminating the program..")
+        words = ''.join(TEXTS[2]).split()
+        return word, words
+    elif user_input():
+        print('input must by number, terminating the program..')
         quit()
     else:
-        print("wrong number, terminating the program..")
+        print('wrong number, terminating the program..')
         quit()
 
-# TEXT
-def selectedTextFunction(input, TEXTS):
-    if input == '1':
-        words = ''.join(TEXTS[0]).split()
-        return words
-    elif input == "2":
-        words = ''.join(TEXTS[1]).split()
-        return words
-    elif input == "3":
-        words = ''.join(TEXTS[2]).split()
-        return words
+word, words = selectedInput(selectedText, TEXTS)
 
-word = selectedInput(selectedText)
-words = selectedTextFunction(selectedText, TEXTS)
+number_uppercases = 0
+number_lowercases = 0
+number_numbers = 0
+number_titlecase = 0
+number_sum = 0
 
-numberUpercaseWord = 0
-numberUpercases = 0
-numberLowercases = 0
-numberNumbers = 0
-numberSum = 0
+print(f'There are {word} words in the selected text.')      
 
-print(F'Počet slov {word}')      
+for word in words:
+    if word.isnumeric():
+        number_numbers += 1
+        number_sum += int(word)
+    elif word.isupper():
+        number_uppercases += 1
+    elif word.islower():
+        number_lowercases += 1
+    elif word.istitle():
+        number_titlecase += 1
 
-for textStartUpercases in words:
-    if textStartUpercases[0].isupper() == True and textStartUpercases.isnumeric() == False and textStartUpercases[1].isupper() == False: 
-        numberUpercaseWord += 1
-print(F"Počet slov začínajících velkým písmenem, pro text 1: {numberUpercaseWord}")
+print(f'There are {number_titlecase} titlecase words.')
+print(f'There are {number_uppercases} uppercase words.')
+print(f'There are {number_lowercases} lowercase words.')
+print(f'There are {number_numbers} numeric strings.')
+print(
+    f'The sum of all the numbers {number_sum}\n'
+    '----------------------------------------\n'
+    'LEN|  OCCURENCES  |NR.\n'
+    '----------------------------------------'
+    ) 
 
-for textUpercases in words:
-    if textUpercases.isupper() == True and textUpercases.isnumeric() == False:
-        numberUpercases += 1
-print(F"Počet slov psaných velkými písmeny, pro text 1: {numberUpercases}") 
-
-for textLowercases in words:
-    if textLowercases.islower() == True and textLowercases.isnumeric() == False:
-        numberLowercases += 1
-print(F"Počet slov psaných velkými písmeny, pro text 1: {numberLowercases}") 
-
-for numbers in words:
-    if numbers.isnumeric() == True:
-        numberNumbers += 1
-print(F"Počet čísel (ne cifer) v textu.: {numberNumbers}") 
-
-for numbers in words:
-    if numbers.isnumeric() == True:
-        numbers = int(numbers)
-        numberSum += numbers
-print(F"Suma všech čísel (ne cifer) v textu.: {numberSum}") 
-
-for sloupcovyGraf in words:
-    delka = len(sloupcovyGraf)
-    print(F"{delka} " + delka * "*")
+for index, barGraph in enumerate(words):
+    length_word = len(barGraph)
+    print(f'{index} |{ '*' * length_word}|{length_word}')
 
 quit()
